@@ -1,0 +1,37 @@
+# Providing the ability to build the sui-node image with uninstrumented/instrumented binary
+# e.g. podman build --no-cache -t mainnet-v1.19.1 .
+FROM docker.io/rust:1.76-bullseye as builder
+
+# Pinning a release tag
+ARG GIT_BRANCH="mainnet-v1.19.1"
+ARG PROFILE="release"
+
+RUN apt-get -y update
+RUN apt-get -y install curl wget git cmake gcc libssl-dev pkg-config libclang-dev libpq-dev build-essential
+
+RUN git clone --depth=1 --branch="${GIT_BRANCH}" https://github.com/MystenLabs/sui.git /sui
+
+RUN wget -O /usr/lib/libvoidstar.so https://antithesis.com/assets/instrumentation/libvoidstar.so
+
+WORKDIR /sui
+
+RUN cargo fetch
+
+ENV RUSTFLAGS="-C target-feature=-crt-static -C codegen-units=1 -C passes=sancov-module \
+-C llvm-args=-sanitizer-coverage-level=3 \
+-C llvm-args=-sanitizer-coverage-trace-pc-guard \
+-C link-args=-Wl,--build-id -Ccodegen-units=1 \
+-L/usr/lib/libvoidstar.so -lvoidstar"
+
+# appears in sui/target/release/sui-node
+RUN --network=none LD_LIBRARY_PATH=/usr/lib/libvoidstar.so cargo build --frozen --profile release --bin sui-node
+
+# Add newly-instrumented binary to existing image
+FROM docker.io/mysten/sui-node:mainnet-v1.19.1
+
+# Retain both uninstrumented and instrumented binary
+COPY --from=builder /usr/lib/libvoidstar.so /usr/lib/libvoidstar.so
+COPY --from=builder /sui/target/release/sui-node /opt/sui/bin/sui-node-inst
+
+# TODO: can possibly replace existing binary?
+RUN ln -s /opt/sui/bin/sui-node-inst /usr/local/bin/sui-node-inst
