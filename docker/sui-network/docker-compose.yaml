@@ -11,7 +11,7 @@ services:
     environment:
       - RUST_BACKTRACE=1
       - RUST_LOG=info,sui_core=info,narwhal=info,narwhal-primary::helper=info,jsonrpsee=error
-      - RPC_WORKER_THREAD=4
+      - RPC_WORKER_THREAD=12
     volumes:
       - ./genesis/files/validator1-8080.yaml:/opt/sui/config/validator.yaml:ro
       - ./genesis/files/genesis.blob:/opt/sui/config/genesis.blob:ro
@@ -38,7 +38,7 @@ services:
     environment:
       - RUST_BACKTRACE=1
       - RUST_LOG=info,sui_core=info,narwhal=info,narwhal-primary::helper=info,jsonrpsee=error
-      - RPC_WORKER_THREAD=4
+      - RPC_WORKER_THREAD=12
     volumes:
       - ./genesis/files/validator2-8080.yaml:/opt/sui/config/validator.yaml:ro
       - ./genesis/files/genesis.blob:/opt/sui/config/genesis.blob:ro
@@ -65,7 +65,7 @@ services:
     environment:
       - RUST_BACKTRACE=1
       - RUST_LOG=info,sui_core=info,narwhal=info,narwhal-primary::helper=info,jsonrpsee=error
-      - RPC_WORKER_THREAD=4
+      - RPC_WORKER_THREAD=12
     volumes:
       - ./genesis/files/validator3-8080.yaml:/opt/sui/config/validator.yaml:ro
       - ./genesis/files/genesis.blob:/opt/sui/config/genesis.blob:ro
@@ -92,7 +92,7 @@ services:
     environment:
       - RUST_BACKTRACE=1
       - RUST_LOG=info,sui_core=info,narwhal=info,narwhal-primary::helper=info,jsonrpsee=error
-      - RPC_WORKER_THREAD=4
+      - RPC_WORKER_THREAD=12
     volumes:
       - ./genesis/static/fullnode.yaml:/opt/sui/config/fullnode.yaml:ro
       - ./genesis/files/genesis.blob:/opt/sui/config/genesis.blob:ro
