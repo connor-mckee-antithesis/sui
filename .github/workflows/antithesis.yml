@@ -9,9 +9,10 @@ env:
   SUT_TAG: a67a73bcfab3eab5568b7d8f8393bcb9e5bddc5b
 
 jobs:
-  antithesis:
+  run-antithesis-test:
     runs-on: ubuntu-latest
 
+    steps:
     # Run Antithesis Tests
     - name: Run Antithesis Tests
       uses: antithesishq/antithesis-trigger-action@main
