@@ -1,0 +1,26 @@
+name: Run Antithesis
+
+on:
+  push:
+    branches:
+      - network-docker-compose  # Change this to relevant branch name
+
+env: 
+  SUT_TAG: a67a73bcfab3eab5568b7d8f8393bcb9e5bddc5b
+
+jobs:
+  antithesis:
+    runs-on: ubuntu-latest
+
+    # Run Antithesis Tests
+    - name: Run Antithesis Tests
+      uses: antithesishq/antithesis-trigger-action@main
+      with:
+        notebook_name: mystenlabs__smoke__mainnet-v1--21--1-instrumented
+        tenant: mystenlabs
+        username: ${{ secrets.ANTITHESIS_USERNAME }}
+        password: ${{ secrets.ANTITHESIS_PASSWORD }}
+        github_token: ${{ secrets.GH_PAT }}
+        # TODO: can use image digest generated from previous step named 'build-push-sui-node'
+        # images: sui-node@${{ steps.build-push-sui-node.outputs.digest }}
+        images: sui-node:${{ env.SUT_TAG }}
